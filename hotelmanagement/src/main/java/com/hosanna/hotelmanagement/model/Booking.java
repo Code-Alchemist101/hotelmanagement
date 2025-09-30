@@ -1,5 +1,6 @@
 package com.hosanna.hotelmanagement.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import java.time.LocalDate;
 
@@ -12,13 +13,17 @@ public class Booking {
     private Long id;
 
     // Many bookings can belong to one user
-    @ManyToOne
+    // FIXED: Added JsonIgnoreProperties to prevent circular reference
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id", nullable = false)
+    @JsonIgnoreProperties({"password", "bookings"})
     private User user;
 
     // Many bookings can belong to one room
-    @ManyToOne
+    // FIXED: Added JsonIgnoreProperties to prevent circular reference
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "room_id", nullable = false)
+    @JsonIgnoreProperties({"bookings"})
     private Room room;
 
     @Column(nullable = false)
@@ -30,6 +35,7 @@ public class Booking {
     @Column(nullable = false)
     private String status = "BOOKED"; // BOOKED / CANCELLED / COMPLETED
 
+    // Constructors
     public Booking() {}
 
     public Booking(User user, Room room, LocalDate checkInDate, LocalDate checkOutDate, String status) {
@@ -41,21 +47,51 @@ public class Booking {
     }
 
     // Getters & Setters
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
+    public Long getId() {
+        return id;
+    }
 
-    public User getUser() { return user; }
-    public void setUser(User user) { this.user = user; }
+    public void setId(Long id) {
+        this.id = id;
+    }
 
-    public Room getRoom() { return room; }
-    public void setRoom(Room room) { this.room = room; }
+    public User getUser() {
+        return user;
+    }
 
-    public LocalDate getCheckInDate() { return checkInDate; }
-    public void setCheckInDate(LocalDate checkInDate) { this.checkInDate = checkInDate; }
+    public void setUser(User user) {
+        this.user = user;
+    }
 
-    public LocalDate getCheckOutDate() { return checkOutDate; }
-    public void setCheckOutDate(LocalDate checkOutDate) { this.checkOutDate = checkOutDate; }
+    public Room getRoom() {
+        return room;
+    }
 
-    public String getStatus() { return status; }
-    public void setStatus(String status) { this.status = status; }
+    public void setRoom(Room room) {
+        this.room = room;
+    }
+
+    public LocalDate getCheckInDate() {
+        return checkInDate;
+    }
+
+    public void setCheckInDate(LocalDate checkInDate) {
+        this.checkInDate = checkInDate;
+    }
+
+    public LocalDate getCheckOutDate() {
+        return checkOutDate;
+    }
+
+    public void setCheckOutDate(LocalDate checkOutDate) {
+        this.checkOutDate = checkOutDate;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
 }

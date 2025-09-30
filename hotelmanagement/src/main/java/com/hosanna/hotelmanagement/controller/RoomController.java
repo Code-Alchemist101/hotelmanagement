@@ -9,6 +9,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/rooms")
+@CrossOrigin(origins = "*") // Add CORS support if needed
 public class RoomController {
 
     private final RoomService roomService;
@@ -20,7 +21,11 @@ public class RoomController {
     // Create a new room
     @PostMapping
     public ResponseEntity<Room> createRoom(@RequestBody Room room) {
-        return ResponseEntity.ok(roomService.createRoom(room));
+        try {
+            return ResponseEntity.ok(roomService.createRoom(room));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
     }
 
     // Get all rooms
@@ -37,16 +42,34 @@ public class RoomController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    // Update room
+    // Update room - FIXED to handle partial updates
     @PutMapping("/{id}")
     public ResponseEntity<Room> updateRoom(@PathVariable Long id, @RequestBody Room room) {
-        return ResponseEntity.ok(roomService.updateRoom(id, room));
+        try {
+            return ResponseEntity.ok(roomService.updateRoom(id, room));
+        } catch (RuntimeException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    // PATCH endpoint for partial updates (optional but recommended)
+    @PatchMapping("/{id}")
+    public ResponseEntity<Room> patchRoom(@PathVariable Long id, @RequestBody Room room) {
+        try {
+            return ResponseEntity.ok(roomService.updateRoom(id, room));
+        } catch (RuntimeException e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     // Delete room
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteRoom(@PathVariable Long id) {
-        roomService.deleteRoom(id);
-        return ResponseEntity.noContent().build();
+        try {
+            roomService.deleteRoom(id);
+            return ResponseEntity.noContent().build();
+        } catch (Exception e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 }

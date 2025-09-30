@@ -93,4 +93,10 @@ public class UserService implements UserDetailsService {
                 List.of(new SimpleGrantedAuthority("ROLE_" + user.getRole()))
         );
     }
+
+    // Get user by username
+    public User getUserByUsername(String username) throws Exception {
+        return userRepository.findByUsername(username)
+                .orElseThrow(() -> new Exception("User not found with username: " + username));
+    }
 }

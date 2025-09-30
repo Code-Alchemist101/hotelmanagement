@@ -31,19 +31,31 @@ public class RoomService {
         return roomRepository.findById(id);
     }
 
-    // Update room
+    // Update room - FIXED to handle partial updates (null-safe)
     public Room updateRoom(Long id, Room updatedRoom) {
         return roomRepository.findById(id).map(room -> {
-            room.setRoomNumber(updatedRoom.getRoomNumber());
-            room.setType(updatedRoom.getType());
-            room.setPrice(updatedRoom.getPrice());
-            room.setAvailable(updatedRoom.getAvailable());
+            // Only update fields that are provided (not null)
+            if (updatedRoom.getRoomNumber() != null) {
+                room.setRoomNumber(updatedRoom.getRoomNumber());
+            }
+            if (updatedRoom.getType() != null) {
+                room.setType(updatedRoom.getType());
+            }
+            if (updatedRoom.getPrice() != null) {
+                room.setPrice(updatedRoom.getPrice());
+            }
+            if (updatedRoom.getAvailable() != null) {
+                room.setAvailable(updatedRoom.getAvailable());
+            }
             return roomRepository.save(room);
         }).orElseThrow(() -> new RuntimeException("Room not found with id " + id));
     }
 
     // Delete room
     public void deleteRoom(Long id) {
+        if (!roomRepository.existsById(id)) {
+            throw new RuntimeException("Room not found with id " + id);
+        }
         roomRepository.deleteById(id);
     }
 }
