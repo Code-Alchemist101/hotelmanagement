@@ -24,8 +24,11 @@ public class JwtRequestFilter extends OncePerRequestFilter {
     private UserDetailsService userDetailsService;
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
-            throws ServletException, IOException {
+    protected void doFilterInternal(
+            HttpServletRequest request,
+            HttpServletResponse response,
+            FilterChain chain
+    ) throws ServletException, IOException {
 
         // Skip JWT validation for public endpoints
         String path = request.getRequestURI();
@@ -35,7 +38,6 @@ public class JwtRequestFilter extends OncePerRequestFilter {
         }
 
         final String authHeader = request.getHeader("Authorization");
-
         String username = null;
         String jwt = null;
 
@@ -66,7 +68,11 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 
                 if (jwtUtil.validateToken(jwt, userDetails.getUsername())) {
                     UsernamePasswordAuthenticationToken authToken =
-                            new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+                            new UsernamePasswordAuthenticationToken(
+                                    userDetails,
+                                    null,
+                                    userDetails.getAuthorities()
+                            );
                     SecurityContextHolder.getContext().setAuthentication(authToken);
                 }
             } catch (Exception e) {
